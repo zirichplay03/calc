@@ -1,0 +1,3 @@
+/home/kek/calc/build/CMakeFiles/calc.dir
+/home/kek/calc/build/CMakeFiles/edit_cache.dir
+/home/kek/calc/build/CMakeFiles/rebuild_cache.dir
