@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/calc.dir/src/main.cpp.o -o calc 
+/usr/bin/c++ CMakeFiles/calc.dir/src/server.cpp.o -o calc 

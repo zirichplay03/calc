@@ -129,29 +129,29 @@ calc/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/build
 .PHONY : calc/fast
 
-src/main.o: src/main.cpp.o
-.PHONY : src/main.o
+src/server.o: src/server.cpp.o
+.PHONY : src/server.o
 
 # target to build an object file
-src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
+src/server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/server.cpp.o
+.PHONY : src/server.cpp.o
 
-src/main.i: src/main.cpp.i
-.PHONY : src/main.i
+src/server.i: src/server.cpp.i
+.PHONY : src/server.i
 
 # target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
+src/server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/server.cpp.i
+.PHONY : src/server.cpp.i
 
-src/main.s: src/main.cpp.s
-.PHONY : src/main.s
+src/server.s: src/server.cpp.s
+.PHONY : src/server.s
 
 # target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
+src/server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/server.cpp.s
+.PHONY : src/server.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... calc"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
+	@echo "... src/server.o"
+	@echo "... src/server.i"
+	@echo "... src/server.s"
 .PHONY : help
 
 

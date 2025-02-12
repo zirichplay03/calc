@@ -69,28 +69,28 @@ include CMakeFiles/calc.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/calc.dir/flags.make
 
-CMakeFiles/calc.dir/src/main.cpp.o: CMakeFiles/calc.dir/flags.make
-CMakeFiles/calc.dir/src/main.cpp.o: /home/kek/calc/src/main.cpp
-CMakeFiles/calc.dir/src/main.cpp.o: CMakeFiles/calc.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kek/calc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/calc.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/calc.dir/src/main.cpp.o -MF CMakeFiles/calc.dir/src/main.cpp.o.d -o CMakeFiles/calc.dir/src/main.cpp.o -c /home/kek/calc/src/main.cpp
+CMakeFiles/calc.dir/src/server.cpp.o: CMakeFiles/calc.dir/flags.make
+CMakeFiles/calc.dir/src/server.cpp.o: /home/kek/calc/src/server.cpp
+CMakeFiles/calc.dir/src/server.cpp.o: CMakeFiles/calc.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kek/calc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/calc.dir/src/server.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/calc.dir/src/server.cpp.o -MF CMakeFiles/calc.dir/src/server.cpp.o.d -o CMakeFiles/calc.dir/src/server.cpp.o -c /home/kek/calc/src/server.cpp
 
-CMakeFiles/calc.dir/src/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/calc.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kek/calc/src/main.cpp > CMakeFiles/calc.dir/src/main.cpp.i
+CMakeFiles/calc.dir/src/server.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/calc.dir/src/server.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kek/calc/src/server.cpp > CMakeFiles/calc.dir/src/server.cpp.i
 
-CMakeFiles/calc.dir/src/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/calc.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kek/calc/src/main.cpp -o CMakeFiles/calc.dir/src/main.cpp.s
+CMakeFiles/calc.dir/src/server.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/calc.dir/src/server.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kek/calc/src/server.cpp -o CMakeFiles/calc.dir/src/server.cpp.s
 
 # Object files for target calc
 calc_OBJECTS = \
-"CMakeFiles/calc.dir/src/main.cpp.o"
+"CMakeFiles/calc.dir/src/server.cpp.o"
 
 # External object files for target calc
 calc_EXTERNAL_OBJECTS =
 
-calc: CMakeFiles/calc.dir/src/main.cpp.o
+calc: CMakeFiles/calc.dir/src/server.cpp.o
 calc: CMakeFiles/calc.dir/build.make
 calc: CMakeFiles/calc.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/kek/calc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable calc"

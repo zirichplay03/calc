@@ -3,4 +3,4 @@ project(calc)
 
 set(CMAKE_CXX_STANDART 20)
 
-add_executable(calc src/main.cpp)
+add_executable(calc src/server.cpp)
