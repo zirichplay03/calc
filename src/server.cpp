@@ -9,7 +9,8 @@ TcpServer::TcpServer() {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1) {
         std::cerr << "Can't create a socket!" << std::endl;
-        exit(1);    }
+        exit(1);
+    }
     // Настройка адреса сервера
     serverAdderss.sin_family = AF_INET;
     serverAdderss.sin_port = htons(SERVER_PORT);
@@ -34,11 +35,14 @@ void TcpServer::star_server() {
         }
         // Получаем информацию о клиенте
         int result = getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, svc, NI_MAXSERV, 0);
-        if (result == 0) {            std::cout << host << " connected on " << svc << std::endl;
-        } else {            inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
+        if (result == 0) {
+            std::cout << host << " connected on " << svc << std::endl;
+        } else {
+            inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
             std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;        }
         // Создаем поток для обработки клиента
-        std::thread clientThread(&TcpServer::handleClient, this, clientSocket);        clientThreads.push_back(std::move(clientThread));
+        std::thread clientThread(&TcpServer::handleClient, this, clientSocket);
+        clientThreads.push_back(std::move(clientThread));
     }}
 void TcpServer::bindAndlisten() {
     // Привязка сокета и прослушивание порта
@@ -51,7 +55,8 @@ void TcpServer::bindAndlisten() {
         exit(1);
     }
 }
-void TcpServer::handleClient(int clientSocket) {    char buf[BUFFER_SIZE];
+void TcpServer::handleClient(int clientSocket) {
+    char buf[BUFFER_SIZE];
     while (true) {
         memset(buf, 0, BUFFER_SIZE);
         int bytesRecv = recv(clientSocket, buf, BUFFER_SIZE, 0);
