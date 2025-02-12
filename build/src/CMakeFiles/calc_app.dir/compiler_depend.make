@@ -9,6 +9,7 @@ src/CMakeFiles/calc_app.dir/calculator.cpp.o: /home/kek/calc/src/calculator.cpp 
 
 src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
   /usr/include/stdc-predef.h \
+  /home/kek/calc/include/server.h \
   /usr/include/c++/8/iostream \
   /usr/include/c++/8/x86_64-redhat-linux/bits/c++config.h \
   /usr/include/bits/wordsize.h \
@@ -192,14 +193,46 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
   /usr/include/bits/confname.h \
   /usr/include/bits/getopt_posix.h \
   /usr/include/bits/getopt_core.h \
-  /usr/include/c++/8/cstring \
-  /usr/include/string.h \
-  /usr/include/strings.h \
+  /usr/include/c++/8/thread \
+  /usr/include/c++/8/chrono \
+  /usr/include/c++/8/ratio \
+  /usr/include/c++/8/limits \
+  /usr/include/c++/8/ctime \
+  /usr/include/c++/8/bits/parse_numbers.h \
+  /usr/include/c++/8/memory \
+  /usr/include/c++/8/bits/stl_construct.h \
+  /usr/include/c++/8/bits/stl_uninitialized.h \
+  /usr/include/c++/8/bits/stl_tempbuf.h \
+  /usr/include/c++/8/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/8/ext/concurrence.h \
+  /usr/include/c++/8/bits/uses_allocator.h \
+  /usr/include/c++/8/bits/unique_ptr.h \
+  /usr/include/c++/8/utility \
+  /usr/include/c++/8/bits/stl_relops.h \
+  /usr/include/c++/8/tuple \
+  /usr/include/c++/8/array \
+  /usr/include/c++/8/bits/invoke.h \
+  /usr/include/c++/8/bits/shared_ptr.h \
+  /usr/include/c++/8/bits/shared_ptr_base.h \
+  /usr/include/c++/8/bits/allocated_ptr.h \
+  /usr/include/c++/8/bits/refwrap.h \
+  /usr/include/c++/8/ext/aligned_buffer.h \
+  /usr/include/c++/8/bits/shared_ptr_atomic.h \
+  /usr/include/c++/8/bits/atomic_base.h \
+  /usr/include/c++/8/bits/atomic_lockfree_defines.h \
+  /usr/include/c++/8/backward/auto_ptr.h \
+  /usr/include/c++/8/vector \
+  /usr/include/c++/8/bits/stl_vector.h \
+  /usr/include/c++/8/bits/stl_bvector.h \
+  /usr/include/c++/8/bits/vector.tcc \
   /usr/include/netdb.h \
   /usr/include/rpc/netdb.h \
   /usr/include/bits/types/sigevent_t.h \
   /usr/include/bits/types/__sigval_t.h \
-  /usr/include/bits/netdb.h
+  /usr/include/bits/netdb.h \
+  /usr/include/c++/8/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h
 
 
 /usr/include/bits/netdb.h:
@@ -210,13 +243,45 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/rpc/netdb.h:
 
+/usr/include/c++/8/vector:
+
+/usr/include/c++/8/bits/atomic_lockfree_defines.h:
+
+/usr/include/c++/8/ext/aligned_buffer.h:
+
+/usr/include/c++/8/bits/shared_ptr_base.h:
+
+/usr/include/c++/8/array:
+
+/usr/include/c++/8/tuple:
+
+/usr/include/c++/8/bits/unique_ptr.h:
+
+/usr/include/c++/8/bits/uses_allocator.h:
+
+/usr/include/c++/8/ext/concurrence.h:
+
+/usr/include/c++/8/bits/stl_tempbuf.h:
+
+/usr/include/c++/8/bits/stl_uninitialized.h:
+
+/usr/include/c++/8/memory:
+
+/usr/include/c++/8/bits/parse_numbers.h:
+
+/usr/include/c++/8/limits:
+
 /usr/include/bits/getopt_core.h:
+
+/usr/include/c++/8/bits/stl_relops.h:
 
 /usr/include/bits/getopt_posix.h:
 
 /usr/include/bits/confname.h:
 
 /usr/include/bits/environments.h:
+
+/usr/include/c++/8/bits/vector.tcc:
 
 /usr/include/unistd.h:
 
@@ -234,6 +299,10 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/c++/8/istream:
 
+/usr/include/c++/8/bits/ostream.tcc:
+
+/usr/include/c++/8/bits/stl_construct.h:
+
 /usr/include/bits/endian.h:
 
 /usr/include/bits/types/struct_itimerspec.h:
@@ -243,6 +312,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 /usr/include/c++/8/clocale:
 
 /usr/include/c++/8/ext/type_traits.h:
+
+/home/kek/calc/include/server.h:
 
 /usr/include/stdlib.h:
 
@@ -270,21 +341,7 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/c++/8/streambuf:
 
-/usr/include/bits/typesizes.h:
-
-/usr/include/bits/types/locale_t.h:
-
-/usr/include/c++/8/bits/basic_ios.tcc:
-
-/usr/include/locale.h:
-
-/usr/include/c++/8/cctype:
-
 /usr/include/c++/8/bits/char_traits.h:
-
-/usr/include/c++/8/ostream:
-
-/usr/lib/gcc/x86_64-redhat-linux/8/include/stdint.h:
 
 /usr/include/c++/8/x86_64-redhat-linux/bits/c++locale.h:
 
@@ -303,6 +360,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 /usr/include/c++/8/bits/concept_check.h:
 
 /usr/include/bits/types/FILE.h:
+
+/usr/include/c++/8/bits/stl_raw_storage_iter.h:
 
 /usr/include/bits/stdlib-float.h:
 
@@ -324,6 +383,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/c++/8/typeinfo:
 
+/usr/include/c++/8/bits/shared_ptr_atomic.h:
+
 /usr/include/c++/8/bits/localefwd.h:
 
 /usr/include/c++/8/bits/exception.h:
@@ -332,7 +393,19 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/bits/types/clock_t.h:
 
-/usr/include/c++/8/bits/stringfwd.h:
+/usr/lib/gcc/x86_64-redhat-linux/8/include/stdint.h:
+
+/usr/include/c++/8/ostream:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/bits/types/locale_t.h:
+
+/usr/include/c++/8/bits/refwrap.h:
+
+/usr/include/c++/8/cctype:
+
+/usr/include/locale.h:
 
 /usr/include/bits/stdio_lim.h:
 
@@ -340,11 +413,27 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/c++/8/ext/string_conversions.h:
 
+/usr/include/c++/8/bits/allocated_ptr.h:
+
 /home/kek/calc/src/server.cpp:
+
+/usr/include/bits/long-double.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/bits/types/__fpos64_t.h:
+
+/usr/include/wctype.h:
+
+/usr/include/c++/8/chrono:
 
 /usr/include/c++/8/bits/stl_algobase.h:
 
 /usr/include/c++/8/bits/postypes.h:
+
+/usr/include/c++/8/bits/atomic_base.h:
 
 /usr/include/gnu/stubs.h:
 
@@ -358,11 +447,29 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/c++/8/bits/basic_string.tcc:
 
+/usr/include/gnu/stubs-64.h:
+
+/usr/include/c++/8/bits/range_access.h:
+
+/usr/include/c++/8/bits/alloc_traits.h:
+
+/usr/include/c++/8/bits/basic_ios.tcc:
+
+/usr/include/c++/8/bits/shared_ptr.h:
+
+/usr/include/c++/8/utility:
+
 /usr/include/bits/locale.h:
+
+/usr/include/c++/8/x86_64-redhat-linux/bits/os_defines.h:
+
+/usr/include/c++/8/iostream:
 
 /usr/include/c++/8/system_error:
 
 /usr/include/c++/8/bits/ptr_traits.h:
+
+/usr/include/c++/8/ctime:
 
 /usr/include/bits/stdint-intn.h:
 
@@ -372,45 +479,21 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/bits/types/mbstate_t.h:
 
-/usr/include/bits/long-double.h:
-
-/usr/include/features.h:
-
-/usr/include/sys/types.h:
-
-/usr/include/bits/types/__fpos64_t.h:
-
-/usr/include/wctype.h:
-
 /usr/include/c++/8/x86_64-redhat-linux/bits/c++config.h:
 
-/usr/include/c++/8/bits/functexcept.h:
+/usr/include/bits/floatn.h:
 
-/usr/include/bits/timex.h:
+/usr/include/c++/8/ios:
 
-/usr/include/bits/byteswap.h:
+/usr/include/c++/8/backward/auto_ptr.h:
 
-/usr/include/bits/types/struct_timeval.h:
+/usr/include/c++/8/bits/stringfwd.h:
 
 /usr/include/ctype.h:
 
 /usr/include/c++/8/cwchar:
 
 /usr/include/bits/libc-header-start.h:
-
-/usr/include/c++/8/ios:
-
-/usr/include/bits/floatn.h:
-
-/usr/include/gnu/stubs-64.h:
-
-/usr/include/c++/8/iostream:
-
-/usr/include/c++/8/x86_64-redhat-linux/bits/os_defines.h:
-
-/usr/include/c++/8/bits/range_access.h:
-
-/usr/include/c++/8/bits/alloc_traits.h:
 
 /usr/include/bits/types/wint_t.h:
 
@@ -419,6 +502,14 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 /usr/include/bits/waitstatus.h:
 
 /usr/include/bits/floatn-common.h:
+
+/usr/include/c++/8/bits/functexcept.h:
+
+/usr/include/bits/timex.h:
+
+/usr/include/bits/byteswap.h:
+
+/usr/include/bits/types/struct_timeval.h:
 
 /usr/include/wchar.h:
 
@@ -456,6 +547,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/c++/8/bits/ios_base.h:
 
+/usr/include/c++/8/bits/stl_bvector.h:
+
 /usr/include/bits/wctype-wchar.h:
 
 /usr/include/bits/pthreadtypes-arch.h:
@@ -471,6 +564,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 /usr/include/bits/sys_errlist.h:
 
 /usr/include/errno.h:
+
+/usr/include/c++/8/ratio:
 
 /usr/include/sched.h:
 
@@ -501,6 +596,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 /usr/include/arpa/inet.h:
 
 /usr/include/c++/8/bits/allocator.h:
+
+/usr/include/c++/8/bits/invoke.h:
 
 /usr/include/sys/select.h:
 
@@ -534,6 +631,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 
 /usr/include/c++/8/cstdlib:
 
+/usr/include/c++/8/thread:
+
 /usr/include/bits/waitflags.h:
 
 /usr/include/c++/8/cerrno:
@@ -549,6 +648,8 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 /usr/include/bits/types/__sigset_t.h:
 
 /usr/include/alloca.h:
+
+/usr/include/c++/8/bits/stl_vector.h:
 
 /usr/include/c++/8/bits/memoryfwd.h:
 
@@ -589,5 +690,3 @@ src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
 /usr/include/c++/8/cwctype:
 
 /usr/include/c++/8/x86_64-redhat-linux/bits/ctype_base.h:
-
-/usr/include/c++/8/bits/ostream.tcc:
