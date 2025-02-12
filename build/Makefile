@@ -117,41 +117,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named calc
+# Target rules for targets named calc_app
 
 # Build rule for target.
-calc: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 calc
-.PHONY : calc
+calc_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 calc_app
+.PHONY : calc_app
 
 # fast build rule for target.
-calc/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/build
-.PHONY : calc/fast
-
-src/server.o: src/server.cpp.o
-.PHONY : src/server.o
-
-# target to build an object file
-src/server.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/server.cpp.o
-.PHONY : src/server.cpp.o
-
-src/server.i: src/server.cpp.i
-.PHONY : src/server.i
-
-# target to preprocess a source file
-src/server.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/server.cpp.i
-.PHONY : src/server.cpp.i
-
-src/server.s: src/server.cpp.s
-.PHONY : src/server.s
-
-# target to generate assembly for a file
-src/server.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/src/server.cpp.s
-.PHONY : src/server.cpp.s
+calc_app/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/calc_app.dir/build.make src/CMakeFiles/calc_app.dir/build
+.PHONY : calc_app/fast
 
 # Help Target
 help:
@@ -161,10 +137,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... calc"
-	@echo "... src/server.o"
-	@echo "... src/server.i"
-	@echo "... src/server.s"
+	@echo "... calc_app"
 .PHONY : help
 
 

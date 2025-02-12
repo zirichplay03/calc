@@ -1,4 +1,4 @@
-CMakeFiles/calc.dir/src/server.cpp.o: /home/kek/calc/src/server.cpp \
+src/CMakeFiles/calc_app.dir/server.cpp.o: /home/kek/calc/src/server.cpp \
  /usr/include/stdc-predef.h /usr/include/c++/8/iostream \
  /usr/include/c++/8/x86_64-redhat-linux/bits/c++config.h \
  /usr/include/bits/wordsize.h \

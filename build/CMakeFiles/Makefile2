@@ -63,42 +63,57 @@ CMAKE_BINARY_DIR = /home/kek/calc/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/calc.dir/all
+all: src/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
-preinstall:
+preinstall: src/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/calc.dir/clean
+clean: src/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/calc.dir
+# Directory level rules for directory src
+
+# Recursive "all" directory target.
+src/all: src/CMakeFiles/calc_app.dir/all
+.PHONY : src/all
+
+# Recursive "preinstall" directory target.
+src/preinstall:
+.PHONY : src/preinstall
+
+# Recursive "clean" directory target.
+src/clean: src/CMakeFiles/calc_app.dir/clean
+.PHONY : src/clean
+
+#=============================================================================
+# Target rules for target src/CMakeFiles/calc_app.dir
 
 # All Build rule for target.
-CMakeFiles/calc.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/kek/calc/build/CMakeFiles --progress-num=1,2 "Built target calc"
-.PHONY : CMakeFiles/calc.dir/all
+src/CMakeFiles/calc_app.dir/all:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/calc_app.dir/build.make src/CMakeFiles/calc_app.dir/depend
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/calc_app.dir/build.make src/CMakeFiles/calc_app.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/kek/calc/build/CMakeFiles --progress-num=1,2,3,4 "Built target calc_app"
+.PHONY : src/CMakeFiles/calc_app.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/calc.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kek/calc/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/calc.dir/all
+src/CMakeFiles/calc_app.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kek/calc/build/CMakeFiles 4
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/calc_app.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/kek/calc/build/CMakeFiles 0
-.PHONY : CMakeFiles/calc.dir/rule
+.PHONY : src/CMakeFiles/calc_app.dir/rule
 
 # Convenience name for target.
-calc: CMakeFiles/calc.dir/rule
-.PHONY : calc
+calc_app: src/CMakeFiles/calc_app.dir/rule
+.PHONY : calc_app
 
 # clean rule for target.
-CMakeFiles/calc.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/calc.dir/build.make CMakeFiles/calc.dir/clean
-.PHONY : CMakeFiles/calc.dir/clean
+src/CMakeFiles/calc_app.dir/clean:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/calc_app.dir/build.make src/CMakeFiles/calc_app.dir/clean
+.PHONY : src/CMakeFiles/calc_app.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.
