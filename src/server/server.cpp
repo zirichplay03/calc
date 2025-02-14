@@ -86,5 +86,5 @@ void TcpServer::stopServer() {
 int main(){
 TcpServer server;
 server.star_server();
-return 0;
+EXIT_SUCCESS;
 }
