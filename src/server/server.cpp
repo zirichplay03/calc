@@ -11,6 +11,12 @@ TcpServer::TcpServer() {
         std::cerr << "Can't create a socket!" << std::endl;
         exit(1);
     }
+    int opt = 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+        std::cerr << "setsockopt failed!" << std::endl;
+        close(serverSocket);
+        exit(1);
+    }
     // Настройка адреса сервера
     serverAdderss.sin_family = AF_INET;
     serverAdderss.sin_port = htons(SERVER_PORT);

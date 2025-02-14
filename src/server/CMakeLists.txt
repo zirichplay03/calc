@@ -3,6 +3,6 @@ set(APP_SOURCES
         auth.cpp        
         server.cpp
 )
-add_executable(calc_app  ${APP_SOURCES})
+add_executable(calc_server  ${APP_SOURCES})
 
-target_link_libraries(calc_app pthread)  
+target_link_libraries(calc_server pthread)  

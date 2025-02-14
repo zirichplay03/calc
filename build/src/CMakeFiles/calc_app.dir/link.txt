@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/calc_app.dir/calculator.cpp.o CMakeFiles/calc_app.dir/auth.cpp.o CMakeFiles/calc_app.dir/server.cpp.o -o calc_app  -lpthread 
