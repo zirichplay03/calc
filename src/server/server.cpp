@@ -30,7 +30,7 @@ TcpServer::~TcpServer() {
         }
     }
 }
-void TcpServer::star_server() {
+void TcpServer::start_server() {
     bindAndlisten();
     // Ожидание подключения клиентов
     while (true) {
@@ -45,7 +45,11 @@ void TcpServer::star_server() {
             std::cout << host << " connected on " << svc << std::endl;
         } else {
             inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-            std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;        }
+            std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;
+        }
+        // Буфер для меню
+        char menuBuffer[1024];
+        displayMenu(menuBuffer);
         // Создаем поток для обработки клиента
         std::thread clientThread(&TcpServer::handleClient, this, clientSocket);
         clientThreads.push_back(std::move(clientThread));
@@ -69,15 +73,26 @@ void TcpServer::handleClient(int clientSocket) {
         if (bytesRecv == -1) {
             std::cerr << "There was a connection issue" << std::endl;
             break;
-        }        if (bytesRecv == 0) {
+        }
+        if (bytesRecv == 0) {
             std::cout << "The client disconnected" << std::endl;
             break;
         }
-        std::cout << "Received: " << std::string(buf, 0, bytesRecv) << std::endl;
-        // Отправляем данные обратно клиенту
-        send(clientSocket, buf, bytesRecv, 0);
+
+        char op;
+        double a, b;
+        sscanf(buf, "%c %lf %lf", &op, &a, &b);
+        std::cout << "Received operation: " << op << " with values: " << a << " and " << b << std::endl;
+
+        // Выполнение операции калькулятора
+        calculate(a, b, op);
+
+        // Отправляем результат обратно клиенту
+        std::string result = "Operation completed.";
+        send(clientSocket, result.c_str(), result.length(), 0);
     }
-    close(clientSocket);}
+    close(clientSocket);
+}
 void TcpServer::stopServer() {
     // Закрытие сервера
     close(serverSocket);
@@ -85,6 +100,6 @@ void TcpServer::stopServer() {
 
 int main(){
 TcpServer server;
-server.star_server();
+server.start_server();
 EXIT_SUCCESS;
 }
