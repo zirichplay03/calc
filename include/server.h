@@ -22,7 +22,7 @@ public:
    TcpServer();//Конструктор
    ~TcpServer();//Деструктор для закрытие сокета 
 
-   void star_server();
+   void start_server();
 
 private:
 
