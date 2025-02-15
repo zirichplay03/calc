@@ -1,5 +1,4 @@
 set(APP_SOURCES        
-        calculator.cpp
         auth.cpp        
         server.cpp
 )

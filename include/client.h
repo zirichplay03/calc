@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "calculator.h"
 
 #define DEFAULT_PORT 5400         
 #define BUFFER_SIZE 4096          

@@ -10,6 +10,7 @@
 #include <thread>
 #include <vector>
 #include <netdb.h>
+#include "calculator.h"
 
 //Порт и буффер
 #define SERVER_PORT 5400
