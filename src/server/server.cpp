@@ -1,5 +1,8 @@
 #include "server.h"
 #include <cstring>
+#include <iostream>
+#include <thread>
+
 TcpServer::TcpServer() {
     // Инициализация переменных
     clientSize = sizeof(client);
@@ -20,7 +23,9 @@ TcpServer::TcpServer() {
     // Настройка адреса сервера
     serverAdderss.sin_family = AF_INET;
     serverAdderss.sin_port = htons(SERVER_PORT);
-    serverAdderss.sin_addr.s_addr = INADDR_ANY;}
+    serverAdderss.sin_addr.s_addr = INADDR_ANY;
+}
+
 TcpServer::~TcpServer() {
     // Закрытие всех соединений и очистка ресурсов
     close(serverSocket);
@@ -30,6 +35,7 @@ TcpServer::~TcpServer() {
         }
     }
 }
+
 void TcpServer::bindAndlisten() {
     // Привязка сокета и прослушивание порта
     if (bind(serverSocket, (sockaddr*)&serverAdderss, sizeof(serverAdderss)) == -1) {
@@ -60,16 +66,33 @@ void TcpServer::start_server() {
             std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;
         }
 
-        // Отправка меню клиенту
-        char menuBuffer[1024];
-        displayMenu(menuBuffer);
-        send(clientSocket, menuBuffer, strlen(menuBuffer), 0);  // Отправка меню клиенту
+        // Отправка приветственного сообщения и ожидание команды
+        char buffer[1024];
+        send(clientSocket, "Enter 'calc' to start the calculator: ", 36, 0);
 
-        // Создание потока для обработки клиента
-        std::thread clientThread(&TcpServer::handleClient, this, clientSocket);
-        clientThreads.push_back(std::move(clientThread));
+        // Получаем команду от клиента
+        memset(buffer, 0, sizeof(buffer));
+        int bytesRecv = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (bytesRecv == -1) {
+            std::cerr << "Error receiving data!" << std::endl;
+            close(clientSocket);
+            continue;
+        }
+
+        if (strncmp(buffer, "calc", 4) == 0) {
+            // Клиент прислал команду "calc", отправляем меню
+            send(clientSocket, "Welcome to the calculator! Please choose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\n", 130, 0);
+
+            // Создание потока для обработки калькулятора
+            std::thread clientThread(&TcpServer::handleClient, this, clientSocket);
+            clientThreads.push_back(std::move(clientThread));
+        } else {
+            send(clientSocket, "Invalid command. Please send 'calc' to start the calculator.", 64, 0);
+            close(clientSocket);
+        }
     }
 }
+
 void TcpServer::handleClient(int clientSocket) {
     char buf[BUFFER_SIZE];
     while (true) {
@@ -91,17 +114,19 @@ void TcpServer::handleClient(int clientSocket) {
 
         std::string result = calculate(a, b, op);
         std::cout << "Sending result: " << result << std::endl;  // Логирование результата
-        send(clientSocket, result.c_str(), result.size(), 0);
+        send(clientSocket, result.c_str(),
+             result.size(), 0);
     }
     close(clientSocket);
 }
+
 void TcpServer::stopServer() {
     // Закрытие сервера
     close(serverSocket);
 }
 
-int main(){
-TcpServer server;
-server.start_server();
-EXIT_SUCCESS;
+int main() {
+    TcpServer server;
+    server.start_server();
+    EXIT_SUCCESS;
 }
