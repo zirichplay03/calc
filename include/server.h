@@ -32,7 +32,7 @@ private:
 
    void bindAndlisten(); // Метод для привязки сокета и прослушивания порта 
 
-   void handleClient(int clientSocket); //Метод для обработки подключения клиента 
+   void handleClient(int clientSocket); //Метод для обработки подключения клиента
 
    void stopServer(); //Метод для остановки сервера 
 

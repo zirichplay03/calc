@@ -1,5 +1,7 @@
 #include "calculator.h"
 #include <cstring>
+#include <sstream>
+#include <iostream>
 
 template <class T>
 T add(T a, T b) {
@@ -19,48 +21,39 @@ T multiply(T a, T b) {
 template <class T>
 T divide(T a, T b) {
     if (b == 0) {
-        cout << "Error: Division by zero!" << endl;
+        std::cout << "Error: Division by zero!" << std::endl;
         return 0;
     }
     return a / b;
 }
 
 template<class T>
-void calculate(T a, T b, char op) {
+std::string calculate(T a, T b, char op) {
+    std::ostringstream resultStream;
     switch(op) {
         case '+':
-            cout << "Addition result: " << add(a, b) << endl;
+            resultStream << "Addition result: " << add(a, b);
             break;
         case '-':
-            cout << "Subtraction result: " << subtract(a, b) << endl;
+            resultStream << "Subtraction result: " << subtract(a, b);
             break;
         case '*':
-            cout << "Multiplication result: " << multiply(a, b) << endl;
+            resultStream << "Multiplication result: " << multiply(a, b);
             break;
         case '/':
-            cout << "Division result: " << divide(a, b) << endl;
+            resultStream << "Division result: " << divide(a, b);
             break;
         default:
-            cout << "Invalid operation!" << endl;
+            resultStream << "Invalid operation!";
     }
-}
-
-// Реализация функции для отображения меню
-template <class T>
-void showMenu() {
-    cout << "Welcome to the Calculator!" << endl;
-    cout << "Choose an operation:" << endl;
-    cout << "1. Addition (+)" << endl;
-    cout << "2. Subtraction (-)" << endl;
-    cout << "3. Multiplication (*)" << endl;
-    cout << "4. Division (/)" << endl;
-    cout << "Enter operation (+, -, *, /): ";
+    return resultStream.str();
 }
 
 void displayMenu(char* buffer) {
-    const char* menu = "Welcome to the Calculator!\nChoose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\nEnter operation (+, -, *, /): ";
+    const char* menu = "Calculator";
     strcpy(buffer, menu);
 }
 
-template void calculate<double>(double a, double b, char op);
 
+// Явная инстанциация для double
+template std::string calculate<double>(double a, double b, char op);

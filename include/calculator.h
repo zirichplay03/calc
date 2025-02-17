@@ -17,7 +17,7 @@ template <class T>
 T divide(T a, T b);
 
 template<class T>
-void calculate(T a, T b, char op);
+std::string calculate(T a, T b, char op);
 
 void displayMenu(char* buffer);
 
