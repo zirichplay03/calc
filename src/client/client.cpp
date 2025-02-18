@@ -4,8 +4,6 @@
 #include <array>
 #include <stdexcept>
 
-#define BUFFER_SIZE 4096
-
 TcpClient::TcpClient(const std::string& ip, int port) : serverIp(ip), serverPort(port) {
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) {
