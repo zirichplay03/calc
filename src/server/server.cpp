@@ -1,3 +1,4 @@
+#include "auth.h"
 #include "server.h"
 #include <cstring>
 #include <iostream>
@@ -66,28 +67,41 @@ void TcpServer::start_server() {
             std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;
         }
 
-        // Отправка приветственного сообщения и ожидание команды
-        char buffer[1024];
-        send(clientSocket, "Enter 'calc' to start the calculator: ", 36, 0);
+        // Передаем путь к базе данных через макрос DB_PATH
+        Auth auth(DB_PATH);  // Используем путь к базе данных из макроса
 
-        // Получаем команду от клиента
-        memset(buffer, 0, sizeof(buffer));
-        int bytesRecv = recv(clientSocket, buffer, sizeof(buffer), 0);
-        if (bytesRecv == -1) {
-            std::cerr << "Error receiving data!" << std::endl;
-            close(clientSocket);
-            continue;
-        }
+        // Выполняем аутентификацию с логином и паролем
+        if (auth.authenticate(clientSocket)) {
+            send(clientSocket, "Authentication successful.\n", 27, 0);
 
-        if (strncmp(buffer, "calc", 4) == 0) {
-            // Клиент прислал команду "calc", отправляем меню
-            send(clientSocket, "Welcome to the calculator! Please choose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\n", 130, 0);
+            // Отправка приветственного сообщения и ожидание команды
+            send(clientSocket, "Enter 'calc' to start the calculator: ", 36, 0);
 
-            // Создание потока для обработки калькулятора
-            std::thread clientThread(&TcpServer::handleClient, this, clientSocket);
-            clientThreads.push_back(std::move(clientThread));
+            // Получаем команду от клиента
+            char buffer[1024];
+            int bytesRecv = recv(clientSocket, buffer, sizeof(buffer), 0);
+            if (bytesRecv == -1) {
+                std::cerr << "Error receiving data!" << std::endl;
+                close(clientSocket);
+                continue;
+            }
+
+            buffer[bytesRecv] = '\0'; // Завершаем строку, чтобы она корректно обрабатывалась
+            std::cout << "Received command: " << buffer << std::endl;  // Логирование полученной команды
+
+            if (strncmp(buffer, "calc", 4) == 0) {
+                // Клиент прислал команду "calc", отправляем меню
+                send(clientSocket, "Welcome to the calculator! Please choose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\n", 130, 0);
+
+                // Создание потока для обработки калькулятора
+                std::thread clientThread(&TcpServer::handleClient, this, clientSocket);
+                clientThreads.push_back(std::move(clientThread));
+            } else {
+                send(clientSocket, "Invalid command. Please send 'calc' to start the calculator.", 64, 0);
+                close(clientSocket);
+            }
         } else {
-            send(clientSocket, "Invalid command. Please send 'calc' to start the calculator.", 64, 0);
+            send(clientSocket, "Authentication failed.\n", 24, 0);
             close(clientSocket);
         }
     }
@@ -114,8 +128,7 @@ void TcpServer::handleClient(int clientSocket) {
 
         std::string result = calculate(a, b, op);
         std::cout << "Sending result: " << result << std::endl;  // Логирование результата
-        send(clientSocket, result.c_str(),
-             result.size(), 0);
+        send(clientSocket, result.c_str(), result.size(), 0);
     }
     close(clientSocket);
 }
@@ -128,5 +141,5 @@ void TcpServer::stopServer() {
 int main() {
     TcpServer server;
     server.start_server();
-    EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

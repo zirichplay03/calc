@@ -11,6 +11,7 @@
 #include <vector>
 #include <netdb.h>
 #include "calculator.h"
+#include "auth.h"
 
 //Порт и буффер
 #define SERVER_PORT 5400
