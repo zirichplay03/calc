@@ -17,7 +17,15 @@ std::string Auth::getInput(int clientSocket, const std::string& prompt) {
         return "";
     }
 
-    return std::string(buffer);
+    buffer[bytesRecv] = '\0';  // Завершаем строку
+    std::string input(buffer);
+
+    // Убираем символ новой строки, если он есть
+    if (!input.empty() && input[input.size() - 1] == '\n') {
+        input.erase(input.size() - 1);  // Удаляем последний символ новой строки
+    }
+
+    return input;
 }
 
 bool Auth::authenticate(int clientSocket) {
@@ -55,16 +63,24 @@ bool Auth::authenticate(int clientSocket) {
     // Выполнение запроса
     rc = sqlite3_step(stmt);
     if (rc == SQLITE_ROW) {
-        // Получение хешированного пароля из базы данных
+        // Получение пароля из базы данных
         const unsigned char* storedPassword = sqlite3_column_text(stmt, 0);
 
+        // Логируем полученный пароль
+        std::cout << "Stored password: " << storedPassword << std::endl;
+        std::cout << "Entered password: " << password << std::endl;
+
         // Для безопасности следует использовать bcrypt для проверки пароля,
-        // но для упрощения здесь просто сравниваем строку (это не безопасно в реальных приложениях).
+        // но для упрощения здесь просто сравниваем строку
         if (storedPassword && password == reinterpret_cast<const char*>(storedPassword)) {
             sqlite3_finalize(stmt);
             sqlite3_close(db);
             return true;  // Аутентификация успешна
+        } else {
+            std::cerr << "Password mismatch." << std::endl;
         }
+    } else {
+        std::cerr << "User not found." << std::endl;
     }
 
     sqlite3_finalize(stmt);
