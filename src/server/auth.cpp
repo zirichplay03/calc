@@ -165,3 +165,38 @@ double Auth::getBalance(const std::string& username) {
 
     return balance;
 }
+
+// В файле auth.cpp добавьте:
+void Auth::logAction(const std::string& action) {
+    sqlite3* db;
+    sqlite3_stmt* stmt;
+    std::string sql = "INSERT INTO logs (username, action) VALUES (?, ?);";  // SQL-запрос для записи в журнал
+
+    // Открытие базы данных
+    int rc = sqlite3_open(dbPath.c_str(), &db);
+    if (rc) {
+        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    // Подготовка SQL-запроса
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, 0);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    // Привязка параметров (имя пользователя и действие)
+    sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, action.c_str(), -1, SQLITE_STATIC);
+
+    // Выполнение запроса
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        std::cerr << "Failed to insert log: " << sqlite3_errmsg(db) << std::endl;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+}

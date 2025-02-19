@@ -48,7 +48,6 @@ void TcpServer::bindAndlisten() {
     }
 }
 
-// В функции start_server
 void TcpServer::start_server() {
     bindAndlisten();
     while (true) {
@@ -73,6 +72,10 @@ void TcpServer::start_server() {
         // Выполняем аутентификацию с логином и паролем
         if (auth.authenticate(clientSocket)) {
             send(clientSocket, "Authentication successful.\n", 27, 0);
+
+            // Логируем успешную аутентификацию
+            std::string username = auth.getAuthenticatedUsername();
+            auth.logAction("User " + username + " logged in");
 
             // После успешной аутентификации переходим к обработке команд
             handleClient(clientSocket, auth);  // Передаем объект auth в handleClient для использования getBalance
@@ -103,6 +106,19 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
         std::string command(buffer); // Преобразуем команду в строку
 
         if (command == "calc") {
+            // Логируем использование калькулятора
+            std::string username = auth.getAuthenticatedUsername();
+            auth.logAction("User " + username + " tried to use the calculator");
+
+            // Проверяем баланс пользователя
+            double balance = auth.getBalance(username);  // Получаем текущий баланс
+
+            if (balance <= 0) {
+                send(clientSocket, "Insufficient balance to use the calculator.\n", 46, 0);
+                auth.logAction("User " + username + " failed to use the calculator due to insufficient balance");
+                continue;  // Пропускаем команду калькулятора
+            }
+
             send(clientSocket, "Welcome to the calculator! Please choose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\n", 130, 0);
 
             // Получаем выражение для калькулятора
@@ -121,26 +137,19 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
                 send(clientSocket, result.c_str(), result.size(), 0);  // Отправляем результат клиенту
 
                 // Уменьшаем баланс на 1
-                std::string username = auth.getAuthenticatedUsername();  // Получаем имя пользователя
-                double balance = auth.getBalance(username);  // Получаем текущий баланс
-
-                if (balance > 0) {
-                    // Уменьшаем баланс на 1
-                    balance -= 1;
-                    // Обновляем баланс в базе данных
-                    auth.updateBalance(username, balance);  // Добавьте метод updateBalance в класс Auth
-                } else {
-                    send(clientSocket, "Insufficient balance to perform the operation.\n", 47, 0);
-                }
-
+                balance -= 1;
+                auth.updateBalance(username, balance);  // Обновляем баланс в базе данных
             } else {
                 send(clientSocket, "Invalid expression format. Try again.\n", 39, 0); // Ошибка при парсинге выражения
             }
 
         } else if (command == "balance") {
+            // Логируем проверку баланса
+            std::string username = auth.getAuthenticatedUsername();
+            auth.logAction("User " + username + " checked balance");
+
             // Получаем баланс пользователя
-            std::string username = auth.getAuthenticatedUsername();  // Здесь можно использовать актуальное имя пользователя
-            double balance = auth.getBalance(username);  // Вызываем getBalance
+            double balance = auth.getBalance(username);  // Получаем баланс
             std::string balanceMessage = "Your balance is: " + std::to_string(balance) + "\n";
             send(clientSocket, balanceMessage.c_str(), balanceMessage.size(), 0);
 
@@ -151,7 +160,6 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
         } else {
             send(clientSocket, "Invalid command. Try again.\n", 26, 0);
         }
-
     }
 
     close(clientSocket);  // Закрытие соединения

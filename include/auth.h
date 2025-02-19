@@ -17,6 +17,7 @@ public:
     double getBalance(const std::string& username);
     std::string getAuthenticatedUsername();
     bool updateBalance(const std::string& username, double newBalance);
+    void logAction(const std::string& action);  // Метод для логирования действий пользователя
 
 private:
     std::string username;  // Имя пользователя
