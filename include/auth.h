@@ -11,8 +11,14 @@ public:
 
     // Метод для аутентификации пользователя по логину и паролю
     bool authenticate(int clientSocket);
+
     std::string getInput(int clientSocket, const std::string& prompt);  // Запрос логина и пароля
     std::string dbPath;  // Путь к базе данных
+    double getBalance(const std::string& username);
+
+private:
+    std::string username;  // Имя пользователя
+    std::string balance;
 };
 
 #endif  // AUTH_H

@@ -74,8 +74,9 @@ void TcpServer::start_server() {
         if (auth.authenticate(clientSocket)) {
             send(clientSocket, "Authentication successful.\n", 27, 0);
 
-            // Отправка приветственного сообщения и ожидание команды
-            send(clientSocket, "Enter 'calc' to start the calculator: ", 36, 0);
+            // Отправка нового меню
+            std::string menu = "Enter 'calc' to start the calculator, 'balance' to check your balance, or 'exit' to quit: ";
+            send(clientSocket, menu.c_str(), menu.size(), 0);
 
             // Получаем команду от клиента
             char buffer[1024];
@@ -86,18 +87,26 @@ void TcpServer::start_server() {
                 continue;
             }
 
-            buffer[bytesRecv] = '\0'; // Завершаем строку, чтобы она корректно обрабатывалась
-            std::cout << "Received command: " << buffer << std::endl;  // Логирование полученной команды
+            buffer[bytesRecv] = '\0';  // Завершаем строку
 
             if (strncmp(buffer, "calc", 4) == 0) {
-                // Клиент прислал команду "calc", отправляем меню
                 send(clientSocket, "Welcome to the calculator! Please choose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\n", 130, 0);
-
-                // Создание потока для обработки калькулятора
                 std::thread clientThread(&TcpServer::handleClient, this, clientSocket);
                 clientThreads.push_back(std::move(clientThread));
+            } else if (strncmp(buffer, "balance", 7) == 0) {
+                std::string username = "user1"; // Здесь замените на актуальное имя пользователя (например, из сессии)
+                double balance = auth.getBalance(username);
+                if (balance >= 0) {
+                    std::string balanceMessage = "Your balance is: " + std::to_string(balance) + "\n";
+                    send(clientSocket, balanceMessage.c_str(), balanceMessage.size(), 0);
+                } else {
+                    send(clientSocket, "Error retrieving balance.\n", 25, 0);
+                }
+            } else if (strncmp(buffer, "exit", 4) == 0) {
+                send(clientSocket, "Goodbye!\n", 9, 0);
+                close(clientSocket);
             } else {
-                send(clientSocket, "Invalid command. Please send 'calc' to start the calculator.", 64, 0);
+                send(clientSocket, "Invalid command.\n", 17, 0);
                 close(clientSocket);
             }
         } else {
