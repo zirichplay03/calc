@@ -16,6 +16,7 @@ public:
     std::string dbPath;  // Путь к базе данных
     double getBalance(const std::string& username);
     std::string getAuthenticatedUsername();
+    bool updateBalance(const std::string& username, double newBalance);
 
 private:
     std::string username;  // Имя пользователя

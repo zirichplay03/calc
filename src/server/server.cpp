@@ -83,7 +83,6 @@ void TcpServer::start_server() {
     }
 }
 
-// Измененный handleClient метод
 void TcpServer::handleClient(int clientSocket, Auth& auth) {
     char buffer[1024];
 
@@ -120,6 +119,20 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
             if (sscanf(buffer, "%lf %c %lf", &a, &op, &b) == 3) {
                 std::string result = calculate(a, b, op);  // Вычисляем результат
                 send(clientSocket, result.c_str(), result.size(), 0);  // Отправляем результат клиенту
+
+                // Уменьшаем баланс на 1
+                std::string username = auth.getAuthenticatedUsername();  // Получаем имя пользователя
+                double balance = auth.getBalance(username);  // Получаем текущий баланс
+
+                if (balance > 0) {
+                    // Уменьшаем баланс на 1
+                    balance -= 1;
+                    // Обновляем баланс в базе данных
+                    auth.updateBalance(username, balance);  // Добавьте метод updateBalance в класс Auth
+                } else {
+                    send(clientSocket, "Insufficient balance to perform the operation.\n", 47, 0);
+                }
+
             } else {
                 send(clientSocket, "Invalid expression format. Try again.\n", 39, 0); // Ошибка при парсинге выражения
             }
@@ -138,6 +151,7 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
         } else {
             send(clientSocket, "Invalid command. Try again.\n", 26, 0);
         }
+
     }
 
     close(clientSocket);  // Закрытие соединения
