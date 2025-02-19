@@ -30,7 +30,7 @@ std::string Auth::getInput(int clientSocket, const std::string& prompt) {
 
 bool Auth::authenticate(int clientSocket) {
     // Запрос логина
-    std::string username = getInput(clientSocket, "Enter username: ");
+    username = getInput(clientSocket, "Enter username: ");
     if (username.empty()) return false; // Если пустое имя, выходим
 
     // Запрос пароля
@@ -87,6 +87,10 @@ bool Auth::authenticate(int clientSocket) {
     sqlite3_close(db);
     return false;  // Неверные данные
 }
+
+std::string Auth::getAuthenticatedUsername() {
+    return username;  // Возвращаем имя пользователя
+}
 double Auth::getBalance(const std::string& username) {
     sqlite3* db;
     sqlite3_stmt* stmt;
@@ -112,7 +116,7 @@ double Auth::getBalance(const std::string& username) {
 
     // Выполнение запроса
     rc = sqlite3_step(stmt);
-    double balance = -1.0;  // Значение по умолчанию для ошибки
+    balance = -1.0;  // Значение по умолчанию для ошибки
     if (rc == SQLITE_ROW) {
         // Получаем баланс из базы данных
         balance = sqlite3_column_double(stmt, 0);

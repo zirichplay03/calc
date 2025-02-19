@@ -33,9 +33,9 @@ private:
 
    void bindAndlisten(); // Метод для привязки сокета и прослушивания порта 
 
-   void handleClient(int clientSocket); //Метод для обработки подключения клиента
+   void handleClient(int clientSocket,Auth& auth); //Метод для обработки подключения клиента
 
-   void stopServer(); //Метод для остановки сервера 
+   void stopServer(); //Метод для остановки сервера
 
    char host[NI_MAXHOST];
    char svc[NI_MAXSERV];

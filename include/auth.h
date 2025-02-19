@@ -15,10 +15,11 @@ public:
     std::string getInput(int clientSocket, const std::string& prompt);  // Запрос логина и пароля
     std::string dbPath;  // Путь к базе данных
     double getBalance(const std::string& username);
+    std::string getAuthenticatedUsername();
 
 private:
     std::string username;  // Имя пользователя
-    std::string balance;
+    double balance;
 };
 
 #endif  // AUTH_H
