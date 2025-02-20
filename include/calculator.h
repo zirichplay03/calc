@@ -19,6 +19,4 @@ T divide(T a, T b);
 template<class T>
 std::string calculate(T a, T b, char op);
 
-void displayMenu(char* buffer);
-
 #endif // CALCULATOR_H

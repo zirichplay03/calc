@@ -13,9 +13,7 @@
 class Auth {
 public:
     // Конструктор, принимающий путь к базе данных
-    // В заголовочном файле auth.h
     explicit Auth(std::string dbPath);
-
 
     // Метод для аутентификации пользователя по логину и паролю
     bool authenticate(int clientSocket);
