@@ -152,7 +152,6 @@ double Auth::getBalance(const std::string& username) {
     return balance;
 }
 
-// В файле auth.cpp добавьте:
 void Auth::logAction(const std::string& action) {
     sql = "INSERT INTO logs (username, action) VALUES (?, ?);";  // SQL-запрос для записи в журнал
 
