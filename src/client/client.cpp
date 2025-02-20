@@ -2,7 +2,6 @@
 
 TcpClient::TcpClient(std::string ip, int port)
         : serverIp(std::move(ip)), serverPort(port), sock(-1), sendRes(0), bytesReceived(0), serverAddr{} {
-    // Теперь serverAddr инициализирован прямо в списке инициализации
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) {
@@ -80,7 +79,7 @@ void TcpClient::start() {
 
 int main() {
     try {
-        TcpClient client("127.0.0.1"); // Используем правильный IP и порт сервера
+        TcpClient client("127.0.0.1");
         client.start();
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

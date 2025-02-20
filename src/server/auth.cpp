@@ -3,8 +3,6 @@
 Auth::Auth(std::string dbPath)
         : dbPath(std::move(dbPath)), balance(0.0), bytesRecv(0), buffer{}, db(nullptr), stmt(nullptr), rc(0), storedPassword(nullptr) {}
 
-
-
 std::string Auth::getInput(int clientSocket, const std::string& prompt) {
     send(clientSocket, prompt.c_str(), prompt.size(), 0);
 
@@ -22,7 +20,6 @@ std::string Auth::getInput(int clientSocket, const std::string& prompt) {
     if (!input.empty() && input[input.size() - 1] == '\n') {
         input.erase(input.size() - 1);  // Удаляем последний символ новой строки
     }
-
     return input;
 }
 
