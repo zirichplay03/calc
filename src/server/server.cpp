@@ -1,16 +1,14 @@
 #include "server.h"
 
-TcpServer::TcpServer()
-        : clientSocket(-1), bytesRecv(0), balance(0.0), a(0.0), b(0.0), op(0),
-          running(true),serverAdderss{}, client{}, host{}, svc{} {  // Инициализация структур
+TcpServer::TcpServer(Auth& authRef)
+        : auth(authRef), clientSocket(-1), bytesRecv(0), balance(0.0), a(0.0), b(0.0), op(0),
+          running(true), serverAdderss{}, client{}, host{}, svc{} {
 
     clientSize = sizeof(client);
 
-    // Явно обнуляем массивы
     memset(host, 0, NI_MAXHOST);
     memset(svc, 0, NI_MAXSERV);
 
-    // Создание сокета
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1) {
         std::cerr << "Can't create a socket!" << std::endl;
@@ -24,14 +22,12 @@ TcpServer::TcpServer()
         exit(1);
     }
 
-    // Настройка адреса сервера
     serverAdderss.sin_family = AF_INET;
     serverAdderss.sin_port = htons(SERVER_PORT);
     serverAdderss.sin_addr.s_addr = INADDR_ANY;
 }
 
 TcpServer::~TcpServer() {
-    // Закрытие всех соединений и очистка ресурсов
     close(serverSocket);
     for (auto& t : clientThreads) {
         if (t.joinable()) {
@@ -41,7 +37,6 @@ TcpServer::~TcpServer() {
 }
 
 void TcpServer::bindAndlisten() {
-    // Привязка сокета и прослушивание порта
     if (bind(serverSocket, (sockaddr*)&serverAdderss, sizeof(serverAdderss)) == -1) {
         std::cerr << "Can't bind to IP/port" << std::endl;
         exit(1);
@@ -54,38 +49,31 @@ void TcpServer::bindAndlisten() {
 
 void TcpServer::start_server() {
     bindAndlisten();
-    while (running) { // Проверяем флаг работы сервера
+    while (running) {
         clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
         if (clientSocket == -1) {
-            if (!running) break; // Если сервер остановлен, выходим из цикла
+            if (!running)
+                break;
             std::cerr << "Problem with client connecting!" << std::endl;
             continue;
         }
 
-        Auth auth(DB_PATH);
         while (!auth.authenticate(clientSocket)) {
             send(clientSocket, "Authentication failed. Try again.\n", 35, 0);
         }
 
         send(clientSocket, "Authentication successful.\n", 27, 0);
         auth.logAction("User " + auth.getAuthenticatedUsername() + " logged in");
-        handleClient(clientSocket, auth);
-
+        handleClient(clientSocket); // Передаем `auth`
 
         close(clientSocket);
     }
 }
 
-void TcpServer::stopServer() {
-    running = false;
-    close(serverSocket);
-}
-
-void TcpServer::handleClient(int socket, Auth& auth) {
+void TcpServer::handleClient(int socket) {
     char buffer[BUFFER_SIZE];
 
     while (true) {
-        // Получаем команду от клиента
         memset(buffer, 0, sizeof(buffer));
         bytesRecv = recv(socket, buffer, sizeof(buffer), 0);
         if (bytesRecv == -1) {
@@ -97,26 +85,22 @@ void TcpServer::handleClient(int socket, Auth& auth) {
             break;
         }
 
-        buffer[bytesRecv] = '\0';  // Завершаем строку
-        command = std::string(buffer); // Правильное преобразование
+        buffer[bytesRecv] = '\0';
+        command = std::string(buffer);
 
         if (command == "calc") {
-            // Логируем использование калькулятора
             username = auth.getAuthenticatedUsername();
             auth.logAction("User " + username + " tried to use the calculator");
 
-            // Проверяем баланс пользователя
-            balance = auth.getBalance(username);  // Получаем текущий баланс
-
+            balance = auth.getBalance(username);
             if (balance <= 0) {
                 send(socket, "Insufficient balance to use the calculator.\n", 46, 0);
                 auth.logAction("User " + username + " failed to use the calculator due to insufficient balance");
-                continue;  // Пропускаем команду калькулятора
+                continue;
             }
 
-            send(clientSocket, "Welcome to the calculator! Please choose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\n", 130, 0);
+            send(socket, "Welcome to the calculator! Please choose an operation:\n1. Addition (+)\n2. Subtraction (-)\n3. Multiplication (*)\n4. Division (/)\n", 130, 0);
 
-            // Получаем выражение для калькулятора
             memset(buffer, 0, sizeof(buffer));
             bytesRecv = recv(socket, buffer, sizeof(buffer), 0);
             if (bytesRecv == -1 || bytesRecv == 0) {
@@ -124,39 +108,36 @@ void TcpServer::handleClient(int socket, Auth& auth) {
                 break;
             }
 
-            buffer[bytesRecv] = '\0';  // Завершаем строку
+            buffer[bytesRecv] = '\0';
             if (sscanf(buffer, "%lf %c %lf", &a, &op, &b) == 3) {
-                result_cal = calculate(a, b, op);  // Вычисляем результат
-                send(clientSocket, result_cal.c_str(), result_cal.size(), 0);  // Отправляем результат клиенту
+                result_cal = calculate(a, b, op);
+                send(socket, result_cal.c_str(), result_cal.size(), 0);
 
-                // Уменьшаем баланс на 1
                 balance -= 1;
-                auth.updateBalance(username, balance);  // Обновляем баланс в базе данных
+                auth.updateBalance(username, balance);
             } else {
-                send(clientSocket, "Invalid expression format. Try again.\n", 39, 0); // Ошибка при парсинге выражения
+                send(socket, "Invalid expression format. Try again.\n", 39, 0);
             }
 
         } else if (command == "balance") {
-            // Логируем проверку баланса
             username = auth.getAuthenticatedUsername();
             auth.logAction("User " + username + " checked balance");
 
-            // Получаем баланс пользователя
-            balance = auth.getBalance(username);  // Получаем баланс
+            balance = auth.getBalance(username);
             balanceMessage = "Your balance is: " + std::to_string(balance) + "\n";
-            send(clientSocket, balanceMessage.c_str(), balanceMessage.size(), 0);
+            send(socket, balanceMessage.c_str(), balanceMessage.size(), 0);
 
         } else {
-            send(clientSocket, "Invalid command. Try again.\n", 26, 0);
-            stopServer();
+            send(socket, "Invalid command. Try again.\n", 26, 0);
         }
     }
 
-    close(clientSocket);  // Закрытие соединения
+    close(socket);
 }
 
 int main() {
-    TcpServer server;
+    Auth auth(DB_PATH);
+    TcpServer server(auth);
     server.start_server();
     return EXIT_SUCCESS;
 }

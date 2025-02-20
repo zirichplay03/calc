@@ -20,17 +20,18 @@
 
 class TcpServer {
 public:
-    TcpServer();   // Конструктор
-    ~TcpServer();  // Деструктор для закрытия сокета
+    explicit TcpServer(Auth& authRef); // Принимаем ссылку на `Auth`
+    ~TcpServer();
 
     void start_server();
 
 private:
-    int serverSocket; // Сокет сервера
+    Auth& auth; // Ссылка на объект аутентификации
+    int serverSocket;
     int opt;
     int clientSocket;
     std::string result_cal;
-    struct sockaddr_in serverAdderss; // Адрес сервера
+    struct sockaddr_in serverAdderss;
     ssize_t bytesRecv;
     std::string command;
     double balance;
@@ -39,11 +40,10 @@ private:
     std::string username;
     bool running;
     std::string balanceMessage;
-    std::vector<std::thread> clientThreads; // Контейнер потоков для обработки клиентов
+    std::vector<std::thread> clientThreads;
 
-    void bindAndlisten();// Метод для привязки сокета и прослушивания порта
-    void handleClient(int clientSocket, Auth& auth); // Метод для обработки подключения клиента
-    void stopServer();// Метод для остановки сервера
+    void bindAndlisten();
+    void handleClient(int clientSocket); // Передаем `Auth` как аргумент
 
     char host[NI_MAXHOST];
     char svc[NI_MAXSERV];
