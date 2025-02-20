@@ -17,8 +17,6 @@ TcpClient::TcpClient(std::string ip, int port)
     }
 }
 
-
-
 TcpClient::~TcpClient() {
     if (sock != -1) {
         close(sock);

@@ -2,7 +2,7 @@
 #define CALCULATOR_H
 
 #include <iostream>
-using namespace std;
+#include <sstream>
 
 template <class T>
 T add(T a, T b);

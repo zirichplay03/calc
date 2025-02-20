@@ -1,6 +1,9 @@
 #include "auth.h"
 
-Auth::Auth(const std::string& dbPath) : dbPath(dbPath) {}
+Auth::Auth(std::string dbPath)
+        : dbPath(std::move(dbPath)), balance(0.0), bytesRecv(0), buffer{}, db(nullptr), stmt(nullptr), rc(0), storedPassword(nullptr) {}
+
+
 
 std::string Auth::getInput(int clientSocket, const std::string& prompt) {
     send(clientSocket, prompt.c_str(), prompt.size(), 0);
@@ -42,7 +45,7 @@ bool Auth::authenticate(int clientSocket) {
     }
 
     // Подготовка SQL-запроса
-    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, 0);
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
         sqlite3_close(db);
@@ -92,7 +95,7 @@ bool Auth::updateBalance(const std::string& username, double newBalance) {
     }
 
     // Подготовка SQL-запроса
-    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, 0);
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
         sqlite3_close(db);
@@ -128,7 +131,7 @@ double Auth::getBalance(const std::string& username) {
     }
 
     // Подготовка SQL-запроса
-    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, 0);
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
         sqlite3_close(db);
@@ -164,7 +167,7 @@ void Auth::logAction(const std::string& action) {
     }
 
     // Подготовка SQL-запроса
-    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, 0);
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
         sqlite3_close(db);

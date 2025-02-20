@@ -1,6 +1,4 @@
 #include "calculator.h"
-#include <sstream>
-#include <iostream>
 
 template <class T>
 T add(T a, T b) {
