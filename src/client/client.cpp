@@ -1,10 +1,9 @@
 #include "client.h"
-#include <iostream>
-#include <cstring>
-#include <array>
-#include <stdexcept>
 
-TcpClient::TcpClient(const std::string& ip, int port) : serverIp(ip), serverPort(port) {
+TcpClient::TcpClient(std::string ip, int port)
+        : serverIp(std::move(ip)), serverPort(port), sock(-1), sendRes(0), bytesReceived(0), serverAddr{} {
+    // Теперь serverAddr инициализирован прямо в списке инициализации
+
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) {
         throw std::runtime_error("Error: Could not create socket!");
@@ -17,6 +16,8 @@ TcpClient::TcpClient(const std::string& ip, int port) : serverIp(ip), serverPort
         throw std::runtime_error("Error: Invalid IP address format!");
     }
 }
+
+
 
 TcpClient::~TcpClient() {
     if (sock != -1) {
@@ -37,11 +38,10 @@ bool TcpClient::connectToServer() {
 
 void TcpClient::communicate() {
     std::array<char, BUFFER_SIZE> buf{};
-    std::string userInput;
 
     // Получаем и отображаем меню
     memset(buf.data(), 0, buf.size());
-    int bytesReceived = recv(sock, buf.data(), buf.size(), 0);
+    bytesReceived = recv(sock, buf.data(), buf.size(), 0);
     if (bytesReceived > 0) {
         std::cout << "SERVER> " << std::string(buf.data(), bytesReceived) << std::endl;
     } else {
@@ -57,7 +57,7 @@ void TcpClient::communicate() {
         if (userInput == "exit") break;
 
         // Отправка данных на сервер
-        int sendRes = send(sock, userInput.c_str(), userInput.size(), 0);
+        sendRes = send(sock, userInput.c_str(), userInput.size(), 0);
         if (sendRes == -1) {
             std::cerr << "Error: Failed to send data to server!" << std::endl;
             continue;

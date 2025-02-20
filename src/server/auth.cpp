@@ -1,16 +1,11 @@
 #include "auth.h"
-#include <sqlite3.h>
-#include <iostream>
-#include <string>
-#include <unistd.h>
 
 Auth::Auth(const std::string& dbPath) : dbPath(dbPath) {}
 
 std::string Auth::getInput(int clientSocket, const std::string& prompt) {
-    char buffer[1024];
     send(clientSocket, prompt.c_str(), prompt.size(), 0);
 
-    int bytesRecv = recv(clientSocket, buffer, sizeof(buffer), 0);
+    bytesRecv = recv(clientSocket, buffer, sizeof(buffer), 0);
     if (bytesRecv <= 0) {
         std::cerr << "Error receiving input!" << std::endl;
         close(clientSocket);
@@ -18,7 +13,7 @@ std::string Auth::getInput(int clientSocket, const std::string& prompt) {
     }
 
     buffer[bytesRecv] = '\0';  // Завершаем строку
-    std::string input(buffer);
+    input=std::string (buffer);
 
     // Убираем символ новой строки, если он есть
     if (!input.empty() && input[input.size() - 1] == '\n') {
@@ -34,16 +29,13 @@ bool Auth::authenticate(int clientSocket) {
     if (username.empty()) return false; // Если пустое имя, выходим
 
     // Запрос пароля
-    std::string password = getInput(clientSocket, "Enter password: ");
+    password = getInput(clientSocket, "Enter password: ");
     if (password.empty()) return false; // Если пустой пароль, выходим
 
-    // Проверка учетных данных в базе
-    sqlite3* db;
-    sqlite3_stmt* stmt;
-    std::string sql = "SELECT password FROM users WHERE username = ?;";  // SQL-запрос для поиска пароля пользователя
+    sql = "SELECT password FROM users WHERE username = ?;";  // SQL-запрос для поиска пароля пользователя
 
     // Открытие базы данных
-    int rc = sqlite3_open(dbPath.c_str(), &db);
+    rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return false;
@@ -64,14 +56,12 @@ bool Auth::authenticate(int clientSocket) {
     rc = sqlite3_step(stmt);
     if (rc == SQLITE_ROW) {
         // Получение пароля из базы данных
-        const unsigned char* storedPassword = sqlite3_column_text(stmt, 0);
+        storedPassword = sqlite3_column_text(stmt, 0);
 
         // Логируем полученный пароль
         std::cout << "Stored password: " << storedPassword << std::endl;
         std::cout << "Entered password: " << password << std::endl;
 
-        // Для безопасности следует использовать bcrypt для проверки пароля,
-        // но для упрощения здесь просто сравниваем строку
         if (storedPassword && password == reinterpret_cast<const char*>(storedPassword)) {
             sqlite3_finalize(stmt);
             sqlite3_close(db);
@@ -92,12 +82,10 @@ std::string Auth::getAuthenticatedUsername() {
     return username;  // Возвращаем имя пользователя
 }
 bool Auth::updateBalance(const std::string& username, double newBalance) {
-    sqlite3* db;
-    sqlite3_stmt* stmt;
-    std::string sql = "UPDATE users SET balance = ? WHERE username = ?;";  // SQL-запрос для обновления баланса пользователя
+    sql = "UPDATE users SET balance = ? WHERE username = ?;";  // SQL-запрос для обновления баланса пользователя
 
     // Открытие базы данных
-    int rc = sqlite3_open(dbPath.c_str(), &db);
+    rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return false;
@@ -130,12 +118,10 @@ bool Auth::updateBalance(const std::string& username, double newBalance) {
     return true;  // Баланс успешно обновлен
 }
 double Auth::getBalance(const std::string& username) {
-    sqlite3* db;
-    sqlite3_stmt* stmt;
-    std::string sql = "SELECT balance FROM users WHERE username = ?;";  // SQL-запрос для получения баланса пользователя
+    sql = "SELECT balance FROM users WHERE username = ?;";  // SQL-запрос для получения баланса пользователя
 
     // Открытие базы данных
-    int rc = sqlite3_open(dbPath.c_str(), &db);
+    rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return -1.0;  // Ошибка при открытии базы данных
@@ -168,12 +154,10 @@ double Auth::getBalance(const std::string& username) {
 
 // В файле auth.cpp добавьте:
 void Auth::logAction(const std::string& action) {
-    sqlite3* db;
-    sqlite3_stmt* stmt;
-    std::string sql = "INSERT INTO logs (username, action) VALUES (?, ?);";  // SQL-запрос для записи в журнал
+    sql = "INSERT INTO logs (username, action) VALUES (?, ?);";  // SQL-запрос для записи в журнал
 
     // Открытие базы данных
-    int rc = sqlite3_open(dbPath.c_str(), &db);
+    rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return;

@@ -1,25 +1,29 @@
-#include "auth.h"
 #include "server.h"
-#include <cstring>
-#include <iostream>
 
-TcpServer::TcpServer() {
-    // Инициализация переменных
+TcpServer::TcpServer()
+        : clientSocket(-1), bytesRecv(0), balance(0.0), a(0.0), b(0.0), op(0),
+          running(true),serverAdderss{}, client{}, host{}, svc{} {  // Инициализация структур
+
     clientSize = sizeof(client);
+
+    // Явно обнуляем массивы
     memset(host, 0, NI_MAXHOST);
     memset(svc, 0, NI_MAXSERV);
+
     // Создание сокета
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1) {
         std::cerr << "Can't create a socket!" << std::endl;
         exit(1);
     }
-    int opt = 1;
+
+    opt = 1;
     if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
         std::cerr << "setsockopt failed!" << std::endl;
         close(serverSocket);
         exit(1);
     }
+
     // Настройка адреса сервера
     serverAdderss.sin_family = AF_INET;
     serverAdderss.sin_port = htons(SERVER_PORT);
@@ -50,49 +54,39 @@ void TcpServer::bindAndlisten() {
 
 void TcpServer::start_server() {
     bindAndlisten();
-    while (true) {
-        int clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
+    while (running) { // Проверяем флаг работы сервера
+        clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
         if (clientSocket == -1) {
+            if (!running) break; // Если сервер остановлен, выходим из цикла
             std::cerr << "Problem with client connecting!" << std::endl;
             continue;
         }
 
-        // Получаем информацию о клиенте
-        int result = getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, svc, NI_MAXSERV, 0);
-        if (result == 0) {
-            std::cout << host << " connected on " << svc << std::endl;
-        } else {
-            inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-            std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;
-        }
-
-        // Передаем путь к базе данных через макрос DB_PATH
-        Auth auth(DB_PATH);  // Создаем объект Auth для работы с базой данных
-
-        // Выполняем аутентификацию с логином и паролем
+        Auth auth(DB_PATH);
         if (auth.authenticate(clientSocket)) {
             send(clientSocket, "Authentication successful.\n", 27, 0);
-
-            // Логируем успешную аутентификацию
-            std::string username = auth.getAuthenticatedUsername();
-            auth.logAction("User " + username + " logged in");
-
-            // После успешной аутентификации переходим к обработке команд
-            handleClient(clientSocket, auth);  // Передаем объект auth в handleClient для использования getBalance
+            auth.logAction("User " + auth.getAuthenticatedUsername() + " logged in");
+            handleClient(clientSocket, auth);
         } else {
-            send(clientSocket, "Authentication failed.\n", 24, 0);
-            close(clientSocket);  // Закрытие соединения при неудачной аутентификации
+            send(clientSocket, "Authentication failed. Try again.\n", 35, 0);
         }
+
+        close(clientSocket);
     }
 }
 
-void TcpServer::handleClient(int clientSocket, Auth& auth) {
-    char buffer[1024];
+void TcpServer::stopServer() {
+    running = false;
+    close(serverSocket);
+}
+
+void TcpServer::handleClient(int socket, Auth& auth) {
+    char buffer[BUFFER_SIZE];
 
     while (true) {
         // Получаем команду от клиента
         memset(buffer, 0, sizeof(buffer));
-        int bytesRecv = recv(clientSocket, buffer, sizeof(buffer), 0);
+        bytesRecv = recv(socket, buffer, sizeof(buffer), 0);
         if (bytesRecv == -1) {
             std::cerr << "Error receiving data!" << std::endl;
             break;
@@ -103,18 +97,18 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
         }
 
         buffer[bytesRecv] = '\0';  // Завершаем строку
-        std::string command(buffer); // Преобразуем команду в строку
+        command = std::string(buffer); // Правильное преобразование
 
         if (command == "calc") {
             // Логируем использование калькулятора
-            std::string username = auth.getAuthenticatedUsername();
+            username = auth.getAuthenticatedUsername();
             auth.logAction("User " + username + " tried to use the calculator");
 
             // Проверяем баланс пользователя
-            double balance = auth.getBalance(username);  // Получаем текущий баланс
+            balance = auth.getBalance(username);  // Получаем текущий баланс
 
             if (balance <= 0) {
-                send(clientSocket, "Insufficient balance to use the calculator.\n", 46, 0);
+                send(socket, "Insufficient balance to use the calculator.\n", 46, 0);
                 auth.logAction("User " + username + " failed to use the calculator due to insufficient balance");
                 continue;  // Пропускаем команду калькулятора
             }
@@ -123,18 +117,16 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
 
             // Получаем выражение для калькулятора
             memset(buffer, 0, sizeof(buffer));
-            bytesRecv = recv(clientSocket, buffer, sizeof(buffer), 0);
+            bytesRecv = recv(socket, buffer, sizeof(buffer), 0);
             if (bytesRecv == -1 || bytesRecv == 0) {
                 std::cerr << "Error receiving calculation expression!" << std::endl;
                 break;
             }
 
             buffer[bytesRecv] = '\0';  // Завершаем строку
-            double a, b;
-            char op;
             if (sscanf(buffer, "%lf %c %lf", &a, &op, &b) == 3) {
-                std::string result = calculate(a, b, op);  // Вычисляем результат
-                send(clientSocket, result.c_str(), result.size(), 0);  // Отправляем результат клиенту
+                result_cal = calculate(a, b, op);  // Вычисляем результат
+                send(clientSocket, result_cal.c_str(), result_cal.size(), 0);  // Отправляем результат клиенту
 
                 // Уменьшаем баланс на 1
                 balance -= 1;
@@ -145,29 +137,21 @@ void TcpServer::handleClient(int clientSocket, Auth& auth) {
 
         } else if (command == "balance") {
             // Логируем проверку баланса
-            std::string username = auth.getAuthenticatedUsername();
+            username = auth.getAuthenticatedUsername();
             auth.logAction("User " + username + " checked balance");
 
             // Получаем баланс пользователя
-            double balance = auth.getBalance(username);  // Получаем баланс
-            std::string balanceMessage = "Your balance is: " + std::to_string(balance) + "\n";
+            balance = auth.getBalance(username);  // Получаем баланс
+            balanceMessage = "Your balance is: " + std::to_string(balance) + "\n";
             send(clientSocket, balanceMessage.c_str(), balanceMessage.size(), 0);
-
-        } else if (command == "exit") {
-            send(clientSocket, "Goodbye!\n", 9, 0);
-            break;  // Закрытие соединения при вводе "exit"
 
         } else {
             send(clientSocket, "Invalid command. Try again.\n", 26, 0);
+            stopServer();
         }
     }
 
     close(clientSocket);  // Закрытие соединения
-}
-
-void TcpServer::stopServer() {
-    // Закрытие сервера
-    close(serverSocket);
 }
 
 int main() {

@@ -17,7 +17,7 @@
 
 class TcpClient {
 public:
-    TcpClient(const std::string& ip, int port = DEFAULT_PORT);
+    explicit TcpClient(std::string ip, int port = DEFAULT_PORT);
     ~TcpClient();
     void start();
 
@@ -26,6 +26,9 @@ private:
     std::string serverIp;
     int serverPort;
     sockaddr_in serverAddr;
+    std::string userInput;
+    ssize_t sendRes;
+    ssize_t bytesReceived;
 
     bool connectToServer();
     void communicate();

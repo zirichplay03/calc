@@ -1,5 +1,4 @@
 #include "calculator.h"
-#include <cstring>
 #include <sstream>
 #include <iostream>
 
@@ -47,11 +46,6 @@ std::string calculate(T a, T b, char op) {
             resultStream << "Invalid operation!";
     }
     return resultStream.str();
-}
-
-void displayMenu(char* buffer) {
-    const char* menu = "Calculator";
-    strcpy(buffer, menu);
 }
 
 

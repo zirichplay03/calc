@@ -3,6 +3,12 @@
 
 #include <string>
 #include <sys/socket.h>
+#include <sqlite3.h>
+#include <iostream>
+#include <string>
+#include <unistd.h>
+
+#define BUFFER_SIZE 4096
 
 class Auth {
 public:
@@ -11,6 +17,15 @@ public:
 
     // Метод для аутентификации пользователя по логину и паролю
     bool authenticate(int clientSocket);
+    ssize_t bytesRecv ;
+    char buffer[BUFFER_SIZE];
+    std::string input;
+    std::string password;
+    sqlite3* db;
+    sqlite3_stmt* stmt;
+    std::string sql;
+    int rc;
+    const unsigned char* storedPassword;
 
     std::string getInput(int clientSocket, const std::string& prompt);  // Запрос логина и пароля
     std::string dbPath;  // Путь к базе данных
