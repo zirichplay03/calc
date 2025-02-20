@@ -63,13 +63,14 @@ void TcpServer::start_server() {
         }
 
         Auth auth(DB_PATH);
-        if (auth.authenticate(clientSocket)) {
-            send(clientSocket, "Authentication successful.\n", 27, 0);
-            auth.logAction("User " + auth.getAuthenticatedUsername() + " logged in");
-            handleClient(clientSocket, auth);
-        } else {
+        while (!auth.authenticate(clientSocket)) {
             send(clientSocket, "Authentication failed. Try again.\n", 35, 0);
         }
+
+        send(clientSocket, "Authentication successful.\n", 27, 0);
+        auth.logAction("User " + auth.getAuthenticatedUsername() + " logged in");
+        handleClient(clientSocket, auth);
+
 
         close(clientSocket);
     }
