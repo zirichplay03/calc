@@ -20,13 +20,13 @@
 
 class TcpServer {
 public:
-    explicit TcpServer(Auth& authRef); // Принимаем ссылку на `Auth`
+    explicit TcpServer(Auth& authRef);
     ~TcpServer();
 
     void start_server();
 
 private:
-    Auth& auth; // Ссылка на объект аутентификации
+    Auth& auth;
     int serverSocket;
     int opt;
     int clientSocket;
@@ -43,7 +43,7 @@ private:
     std::vector<std::thread> clientThreads;
 
     void bindAndlisten();
-    void handleClient(int clientSocket); // Передаем `Auth` как аргумент
+    void handleClient(int clientSocket);
 
     char host[NI_MAXHOST];
     char svc[NI_MAXSERV];

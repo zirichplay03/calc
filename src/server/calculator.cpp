@@ -1,20 +1,48 @@
 #include "calculator.h"
 
+/**
+ * @brief Выполняет сложение двух чисел.
+ * @tparam T Тип чисел (int, double и т. д.).
+ * @param a Первое число.
+ * @param b Второе число.
+ * @return Результат сложения.
+ */
 template <class T>
 T add(T a, T b) {
     return a + b;
 }
 
+/**
+ * @brief Выполняет вычитание двух чисел.
+ * @tparam T Тип чисел (int, double и т. д.).
+ * @param a Уменьшаемое число.
+ * @param b Вычитаемое число.
+ * @return Результат вычитания.
+ */
 template <class T>
 T subtract(T a, T b) {
     return a - b;
 }
 
+/**
+ * @brief Выполняет умножение двух чисел.
+ * @tparam T Тип чисел (int, double и т. д.).
+ * @param a Первый множитель.
+ * @param b Второй множитель.
+ * @return Результат умножения.
+ */
 template <class T>
 T multiply(T a, T b) {
     return a * b;
 }
 
+/**
+ * @brief Выполняет деление двух чисел.
+ * @tparam T Тип чисел (int, double и т. д.).
+ * @param a Делимое.
+ * @param b Делитель.
+ * @return Результат деления или 0 в случае деления на ноль.
+ */
 template <class T>
 T divide(T a, T b) {
     if (b == 0) {
@@ -24,6 +52,14 @@ T divide(T a, T b) {
     return a / b;
 }
 
+/**
+ * @brief Выполняет математическую операцию между двумя числами.
+ * @tparam T Тип чисел (int, double и т. д.).
+ * @param a Первое число.
+ * @param b Второе число.
+ * @param op Оператор операции (+, -, *, /).
+ * @return Строка с результатом вычисления или сообщение об ошибке.
+ */
 template<class T>
 std::string calculate(T a, T b, char op) {
     std::ostringstream resultStream;
@@ -46,6 +82,4 @@ std::string calculate(T a, T b, char op) {
     return resultStream.str();
 }
 
-
-// Явная инстанциация для double
 template std::string calculate<double>(double a, double b, char op);

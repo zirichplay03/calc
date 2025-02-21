@@ -1,8 +1,18 @@
 #include "auth.h"
 
+/**
+ * @brief Конструктор класса Auth.
+ * @param dbPath Путь к базе данных SQLite.
+ */
 Auth::Auth(std::string dbPath)
         : dbPath(std::move(dbPath)), balance(0.0), bytesRecv(0), buffer{}, db(nullptr), stmt(nullptr), rc(0), storedPassword(nullptr) {}
 
+/**
+ * @brief Получает ввод пользователя через сокет.
+ * @param clientSocket Сокет клиента.
+ * @param prompt Сообщение для пользователя перед вводом.
+ * @return Строка, содержащая ввод пользователя.
+ */
 std::string Auth::getInput(int clientSocket, const std::string& prompt) {
     send(clientSocket, prompt.c_str(), prompt.size(), 0);
 
@@ -14,34 +24,35 @@ std::string Auth::getInput(int clientSocket, const std::string& prompt) {
     }
 
     buffer[bytesRecv] = '\0';  // Завершаем строку
-    input=std::string (buffer);
+    input = std::string(buffer);
 
     // Убираем символ новой строки, если он есть
     if (!input.empty() && input[input.size() - 1] == '\n') {
-        input.erase(input.size() - 1);  // Удаляем последний символ новой строки
+        input.erase(input.size() - 1);
     }
     return input;
 }
 
+/**
+ * @brief Выполняет аутентификацию пользователя.
+ * @param clientSocket Сокет клиента.
+ * @return true, если аутентификация успешна, иначе false.
+ */
 bool Auth::authenticate(int clientSocket) {
-    // Запрос логина
     username = getInput(clientSocket, "Enter username: ");
-    if (username.empty()) return false; // Если пустое имя, выходим
+    if (username.empty()) return false;
 
-    // Запрос пароля
     password = getInput(clientSocket, "Enter password: ");
-    if (password.empty()) return false; // Если пустой пароль, выходим
+    if (password.empty()) return false;
 
-    sql = "SELECT password FROM users WHERE username = ?;";  // SQL-запрос для поиска пароля пользователя
+    sql = "SELECT password FROM users WHERE username = ?;";
 
-    // Открытие базы данных
     rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
 
-    // Подготовка SQL-запроса
     rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
@@ -49,23 +60,19 @@ bool Auth::authenticate(int clientSocket) {
         return false;
     }
 
-    // Привязка параметра (имя пользователя)
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
 
-    // Выполнение запроса
     rc = sqlite3_step(stmt);
     if (rc == SQLITE_ROW) {
-        // Получение пароля из базы данных
         storedPassword = sqlite3_column_text(stmt, 0);
 
-        // Логируем полученный пароль
         std::cout << "Stored password: " << storedPassword << std::endl;
         std::cout << "Entered password: " << password << std::endl;
 
         if (storedPassword && password == reinterpret_cast<const char*>(storedPassword)) {
             sqlite3_finalize(stmt);
             sqlite3_close(db);
-            return true;  // Аутентификация успешна
+            return true;
         } else {
             std::cerr << "Password mismatch." << std::endl;
         }
@@ -75,23 +82,32 @@ bool Auth::authenticate(int clientSocket) {
 
     sqlite3_finalize(stmt);
     sqlite3_close(db);
-    return false;  // Неверные данные
+    return false;
 }
 
+/**
+ * @brief Получает аутентифицированное имя пользователя.
+ * @return Имя пользователя.
+ */
 std::string Auth::getAuthenticatedUsername() {
-    return username;  // Возвращаем имя пользователя
+    return username;
 }
-bool Auth::updateBalance(const std::string& username, double newBalance) {
-    sql = "UPDATE users SET balance = ? WHERE username = ?;";  // SQL-запрос для обновления баланса пользователя
 
-    // Открытие базы данных
+/**
+ * @brief Обновляет баланс пользователя в базе данных.
+ * @param username Имя пользователя.
+ * @param newBalance Новый баланс.
+ * @return true, если обновление прошло успешно, иначе false.
+ */
+bool Auth::updateBalance(const std::string& username, double newBalance) {
+    sql = "UPDATE users SET balance = ? WHERE username = ?;";
+
     rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
 
-    // Подготовка SQL-запроса
     rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
@@ -99,11 +115,9 @@ bool Auth::updateBalance(const std::string& username, double newBalance) {
         return false;
     }
 
-    // Привязка параметров (новый баланс и имя пользователя)
     sqlite3_bind_double(stmt, 1, newBalance);
     sqlite3_bind_text(stmt, 2, username.c_str(), -1, SQLITE_STATIC);
 
-    // Выполнение запроса
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
         std::cerr << "Failed to update balance: " << sqlite3_errmsg(db) << std::endl;
@@ -115,34 +129,35 @@ bool Auth::updateBalance(const std::string& username, double newBalance) {
     sqlite3_finalize(stmt);
     sqlite3_close(db);
 
-    return true;  // Баланс успешно обновлен
+    return true;
 }
-double Auth::getBalance(const std::string& username) {
-    sql = "SELECT balance FROM users WHERE username = ?;";  // SQL-запрос для получения баланса пользователя
 
-    // Открытие базы данных
+/**
+ * @brief Получает текущий баланс пользователя.
+ * @param username Имя пользователя.
+ * @return Баланс пользователя. В случае ошибки возвращает -1.0.
+ */
+double Auth::getBalance(const std::string& username) {
+    sql = "SELECT balance FROM users WHERE username = ?;";
+
     rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
-        return -1.0;  // Ошибка при открытии базы данных
+        return -1.0;
     }
 
-    // Подготовка SQL-запроса
     rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
         sqlite3_close(db);
-        return -1.0;  // Ошибка при подготовке запроса
+        return -1.0;
     }
 
-    // Привязка параметра (имя пользователя)
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
 
-    // Выполнение запроса
     rc = sqlite3_step(stmt);
-    balance = -1.0;  // Значение по умолчанию для ошибки
+    balance = -1.0;
     if (rc == SQLITE_ROW) {
-        // Получаем баланс из базы данных
         balance = sqlite3_column_double(stmt, 0);
     }
 
@@ -152,17 +167,19 @@ double Auth::getBalance(const std::string& username) {
     return balance;
 }
 
+/**
+ * @brief Записывает действие пользователя в журнал.
+ * @param action Описание действия.
+ */
 void Auth::logAction(const std::string& action) {
-    sql = "INSERT INTO logs (username, action) VALUES (?, ?);";  // SQL-запрос для записи в журнал
+    sql = "INSERT INTO logs (username, action) VALUES (?, ?);";
 
-    // Открытие базы данных
     rc = sqlite3_open(dbPath.c_str(), &db);
     if (rc) {
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return;
     }
 
-    // Подготовка SQL-запроса
     rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
@@ -170,11 +187,9 @@ void Auth::logAction(const std::string& action) {
         return;
     }
 
-    // Привязка параметров (имя пользователя и действие)
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, action.c_str(), -1, SQLITE_STATIC);
 
-    // Выполнение запроса
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
         std::cerr << "Failed to insert log: " << sqlite3_errmsg(db) << std::endl;
