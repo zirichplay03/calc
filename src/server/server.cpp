@@ -45,7 +45,9 @@ TcpServer::TcpServer(Auth& authRef)
  * Закрывает серверный сокет и ожидает завершения всех потоков.
  */
 TcpServer::~TcpServer() {
+    running = false;
     close(serverSocket);
+
     for (auto& t : clientThreads) {
         if (t.joinable()) {
             t.join();
@@ -75,10 +77,18 @@ void TcpServer::start_server() {
     while (running) {
         clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
         if (clientSocket == -1) {
-            if (!running)
-                break;
             std::cerr << "Problem with client connecting!" << std::endl;
             continue;
+        }
+
+        // Получение информации о клиенте (IP-адрес и порт)
+        memset(host, 0, NI_MAXHOST);
+        memset(svc, 0, NI_MAXSERV);
+
+        if (getnameinfo((sockaddr*)&client, clientSize, host, NI_MAXHOST, svc, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
+            std::cout << "New connection from " << host << ":" << svc << std::endl;
+        } else {
+            std::cout << "New connection from unknown client" << std::endl;
         }
 
         // Повторная аутентификация в случае неудачи
@@ -161,7 +171,7 @@ void TcpServer::handleClient(int socket) {
             auth.logAction("User " + username + " checked balance");
 
             balance = auth.getBalance(username);
-            balanceMessage = "Your balance is: " + std::to_string(balance) + "\n";
+            balanceMessage = "Your balance is: " + std::to_string(static_cast<int>(balance)) + "\n";
             send(socket, balanceMessage.c_str(), balanceMessage.size(), 0);
 
             // Обработка некорректных команд
